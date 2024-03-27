@@ -1,0 +1,42 @@
+*{
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+img{
+    margin: 0 1rem;
+}
+body{
+    width: 100vw;
+    height: 100vh;
+}
+
+
+.container-table{
+    overflow-x: auto;
+}
+
+
+
+.col-md-6 {
+    height: 35rem;
+    overflow-y: auto;
+    padding: 0px 0px;
+    margin-top: 1rem;
+}
+
+h2{
+    margin: 2rem;
+    margin-left: 6.5rem;
+}
+
+#dsTable {
+    padding: 0px 0px;
+}
+
+table {
+    width:100%;
+}
+.container-md{
+    width: 100%;
+}

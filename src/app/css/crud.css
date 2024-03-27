@@ -1,0 +1,63 @@
+*{
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+img{
+    margin: 0 1rem;
+}
+body{
+    width: 100vw;
+    height: 100vh;
+}
+
+.col-md-6 {
+    height: 35rem;
+    overflow-y: scroll;
+    padding: 0px 0px;
+    margin-top: 1rem;
+}
+
+.container-table{
+    overflow-x: auto;
+}
+
+
+#dsTable {
+    padding: 0px 0px;
+}
+
+table {
+    width:100%;
+}
+.container-md{
+    width: 100%;
+}
+
+.modal-content{
+    background-color: red;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+.containerMD{
+    margin-top: 2rem;
+  
+}
+
+.btn_add{
+    margin: 2rem 0rem;
+}
+
+.H2_TITLE{
+    margin: 1rem 0rem;
+}
+
+@media screen and (max-width: 500px) {
+   
+    .H2_TITLE{
+        margin: 0.2rem .5rem;
+    }
+    .btn_add{
+        margin: 2rem .5rem;
+    }
+  }

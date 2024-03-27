@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD</title>
+        <!-- Latest compiled and minified CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/crud.css">
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <!--
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">WIDE</a>
+        </div>
+    </nav>-->
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark ">
+      
+        <a class="navbar-brand" href="/">
+          <img src="https://wide.ec/wp-content/uploads/2022/06/logo-widep.png" style="width:100px;" class="rounded-pill"> 
+        </a>
+        
+      
+    </nav>
+    <% if(msgbad==true) {%>
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+            <h4 class="modal-title">ERROR</h4>
+            </div>
+    
+            <!-- Modal body -->
+            <div class="modal-body">
+                La imagen no puede ser mayor a 40MB
+            </div>
+        </div>
+    <% } %>
+    
+    <div class="container col-md-6 container-md">      
+        <h2 class="H2_TITLE">Lista de usuarios</h2>
+        <form action="/add_user" method="post">
+            <button type="submit" class="btn btn-success btn_add">Nuevo Usuario</button>
+        </form>
+        <div id="dsTable" class="container container-table">           
+          <table class="table table-hover table-bordered  table-dark table-responsive">
+            <thead>
+              <tr>
+                <th class="info">ID</th>
+                <th class="info">Company id</th>
+                <th class="info">Code</th>
+                <th class="info">First_name</th>
+                <th class="info">Last_name</th>
+                <th class="info">Phone</th>
+                <th class="info">Email</th>
+                <th class="info">Address</th>
+                <th class="info">Options</th>
+              </tr>
+            </thead>
+            <tbody>
+                <% for(var i=0; i<users.length; i++) {%>
+                    <tr>
+                        <td><%= users[i]["id"] %></td>
+                        <td><%= users[i]["company_id"] %></td>
+                        <td><%= users[i]["code"] %></td>
+                        <td><%= users[i]["first_name"] %></td>
+                        <td><%= users[i]["last_name"] %></td>
+                        <td><%= users[i]["phone"] %></td>
+                        <td><%= users[i]["email"] %></td>
+                        <td><%= users[i]["address"] %></td>
+                        <td>
+                            <div class="btn-group">
+                                <form action="/delete" method="post">
+                                    <button type="submit" class="btn btn-danger" name="btn_delete" value='<%= users[i]["id"] %>'>Eliminar</button>
+                                </form>
+                                <form action="/edit_user"  method="post">
+                                    <button type="submit" class="btn btn-primary" name="btn_edit" value='<%= users[i]["id"] %>' >Editar</button>
+                                </form>
+                                
+                            </div>
+                        </td>
+                    </tr>
+                <% } %>
+                
+            </tbody>
+          </table>
+        </div>
+    </div>
+
+</body>
+</html>
+

@@ -1,0 +1,17 @@
+
+.containerMD{
+   
+    margin-top: 5rem;
+    padding: 8rem;
+    box-shadow: 1px 1px 10px rgb(33,37,41);
+    border-radius: 5px;
+}
+@media screen and (max-width: 500px) {
+    .containerMD{
+   
+        margin-top:  10rem;
+        padding: 1rem;
+       
+    }
+    
+  }
