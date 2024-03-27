@@ -154,6 +154,36 @@ img{
     padding: 1rem 2rem;
     border-radius: 10px;
 }
+.container2-modal{
+    display: flex;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    
+}
+
+.modalCard2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+}
+.img_{
+    background-image: url("https://static.vecteezy.com/system/resources/previews/010/153/064/non_2x/check-mark-icon-sign-symbol-design-free-png.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 5rem;
+    height: 5rem;
+    margin: 2rem;
+}
 
 @media screen and (max-width: 500px) {
    

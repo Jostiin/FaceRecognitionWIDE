@@ -34,6 +34,7 @@ function StartWebCam(){
 
 btn_iniciar.addEventListener("click",function(){
     //Envia un JSON con el nombre de usuario y la opcion a la ruta /register 
+    
     fetch("/register",{
         method:"POST",
         body:JSON.stringify({name:name_user,option:"Entrada"}),
@@ -45,10 +46,16 @@ btn_iniciar.addEventListener("click",function(){
         return response.text()
     }).then(data => {
         if (data == "save") {
-            window.location.href = "/save_succesfull"
+            document.getElementById("container2-modal").style.display = "flex"
+            setTimeout(function () {
+                document.getElementById("container2-modal").style.display = "none"
+            },2000)
+            
         }
         
     })
+    
+    
     
 })
 
