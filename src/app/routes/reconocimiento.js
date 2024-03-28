@@ -17,44 +17,26 @@ module.exports = app => {
         res.render('index',{
             navbar:error_navbar
         })
-        /*
-        var ip = req.header("x-forwarded-fir") || req.connection.remoteAddress;
         
-        conection.query(`SELECT Business from authorization WHERE ip='${ip}'`,function(error,result){
-            if(error){
-                throw error
-                
-            }else{
-                if(result.length == 0) {
-                    console.log(ip)
-                    res.render('not _authorized')
-                }
-                else res.render('index',{
-                    navbar:error_navbar
-                })
-               
-               
-            
-        })*/
     });
     //Se hace una consulta a la base de datos para face-api.js
     app.get('/mysql',(req,res) =>{
-        conection.query(`SELECT first_name, face_image1, face_image2 from face_employe`,function(error,result){
+        conection.query(`SELECT first_name,	last_name, face_image1, face_image2 from face_employe`,function(error,result){
             if(error){
                 throw error
             }else{
                 for (let index = 0; index < result.length; index++) {
                     //Revisa si la carpeta existe, sino se crea 
-                    if(fs.existsSync(`src/app/labeled_images/${result[index]["first_name"]}`)){
-                        fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]}/1.jpg`,result[index]["face_image1"])
-                        fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]}/2.jpg`,result[index]["face_image2"])
+                    if(fs.existsSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}`)){
+                        fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/1.jpg`,result[index]["face_image1"])
+                        fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/2.jpg`,result[index]["face_image2"])
                     }else{
                      
-                        fs.mkdir(`src/app/labeled_images/${result[index]["first_name"]}`,{recursive:true},(err)=>{
+                        fs.mkdir(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}`,{recursive:true},(err)=>{
                             if(err) throw err
                             else{
-                                fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]}/1.jpg`,result[index]["face_image1"])
-                                fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]}/2.jpg`,result[index]["face_image2"])
+                                fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/1.jpg`,result[index]["face_image1"])
+                                fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/2.jpg`,result[index]["face_image2"])
                             }
                         })
                       
@@ -106,27 +88,31 @@ module.exports = app => {
         let username = req.session.usuario
         let password = req.session.clave
         if(req.session.usuario && req.session.clave){
-            /*
-            conection.query(`SELECT * from admins WHERE user='${username}' AND password='${password}'`,function(error,result){
+            
+            conection.query(`SELECT company_id FROM users WHERE administrador=1 AND username='${username}' AND password='${password}'`,function(error,result){
                 if(error){
                     throw error
                     
                 }else{
-                    
-                }
-            })*/
-            if(username == "admin" && password == "admin"){
-                conection.query(`SELECT id,company_id,code,first_name,last_name,phone,email,address FROM face_employe;`,function(error,result){
-                    if(error){
-                        throw error
+                    if (result.length == 0) {
+                       
+                        res.redirect("/login")
                     }else{
-                        res.render("crud",{
-                            users:result,
-                            msgbad:false
+                        conection.query(`SELECT id,company_id,code,first_name,last_name,phone,email,address FROM face_employe WHERE company_id=${result[0]["company_id"]};`,function(error,resulte){
+                            if(error){
+                                throw error
+                            }else{
+                                res.render("crud",{
+                                    companyID: result[0]["company_id"],
+                                    users:resulte,
+                                    msgbad:false
+                                })
+                            }
                         })
                     }
-                })
-            }
+                }
+            })
+            
         }else{
             res.redirect("/login")
         }
@@ -134,34 +120,36 @@ module.exports = app => {
     })
 
     app.post('/admin',(req,res) =>{         
+        let username = req.session.usuario
+        let password = req.session.clave
         if(req.session.usuario && req.session.clave){
-            /*
-            conection.query(`SELECT * from admins WHERE user='${username}' AND password='${password}'`,function(error,result){
+            
+            conection.query(`SELECT * FROM users WHERE administrador=1 AND name='${username}' AND password='${password}'`,function(error,result){
                 if(error){
                     throw error
                     
                 }else{
-                    
-                }
-            })*/
-            if(req.session.usuario == "admin" && req.session.clave== "admin"){
-                conection.query(`SELECT id,company_id,code,first_name,last_name,phone,email,address FROM face_employe;`,function(error,result){
-                    if(error){
-                        throw error
+                    if (result.length == 0) {
+                       
+                        res.redirect("/login")
                     }else{
-                        res.render("crud",{
-                            users:result,
-                            msgbad:false
+                        conection.query(`SELECT id,company_id,code,first_name,last_name,phone,email,address FROM face_employe;`,function(error,result){
+                            if(error){
+                                throw error
+                            }else{
+                                res.render("crud",{
+                                    users:result,
+                                    msgbad:false
+                                })
+                            }
                         })
                     }
-                })
-            }
+                }
+            })
+            
         }else{
             res.redirect("/login")
         }
-      
-        
-        
     })
 
     app.post('/panel-control',(req,res) =>{
@@ -179,9 +167,85 @@ module.exports = app => {
        
     })
 
+    app.post('/add_schedule',(req,res) =>{
+        
+        
+
+        let companyID = req.body.company_id
+        let timeIngreso1 = `${req.body.ingreso1}:00`
+        let timeIngreso2 = `${req.body.ingreso2}:00`
+        let timeAlmuerzo1 = `${req.body.almuerzo1}:00`
+        let timeAlmuerzo2 = `${req.body.almuerzo2}:00`
+        let timeSalida1 = `${req.body.salida1}:00`
+        let timeSalida2 = `${req.body.salida2}:00`
+
+        ListNameSchedule = {
+            "INGRESO":[timeIngreso1,timeIngreso2],
+            "ALMUERZO":[timeAlmuerzo1,timeAlmuerzo2],
+            "ALMUERZO RETORNO":[timeAlmuerzo1,timeAlmuerzo2],
+            "SALIDA":[timeSalida1,timeSalida2]
+        }
+
+    
+        if (timeAlmuerzo1 != ":00" && timeAlmuerzo2 != ":00") {
+
+            for (let element in ListNameSchedule) {
+                conection.query("INSERT INTO face_schedule SET ?",{company_id:companyID,name:element,hour_ini:ListNameSchedule[element][0],hour_end:ListNameSchedule[element][1]},(err,result)=>{
+                    if(err){
+                        throw err
+                    }else{
+                        
+                        res.redirect("/admin")
+                    }
+                })
+            }
+        
+        }else{
+            for (let element in ListNameSchedule) {
+                if (element != "ALMUERZO" || element != "ALMUERZO RETORNO") {
+                    conection.query("INSERT INTO face_schedule SET ?",{company_id:companyID,name:element,hour_ini:ListNameSchedule[element][0],hour_end:ListNameSchedule[element][1]},(err,result)=>{
+                        if(err){
+                            throw err
+                        }else{
+                            res.redirect("/admin")
+                        }
+                    })
+                }
+                
+            }
+        }
+        
+        
+        res.redirect("/admin")
+    })
+
     app.post('/add',(req,res) =>{
+
+        function InsertFaceSchedule(companyID,name,code) {
+            conection.query(`SELECT id FROM face_schedule WHERE company_id=${companyID} AND name='${name}'`,(err,result)=>{
+                if(err){
+                    throw err
+                }else{
+                    result.forEach(element => {
+                        conection.query("INSERT INTO face_employe_schedule SET ?",{	face_employe_code:code,face_schedule_id:element["id"],status:1},(err,result)=>{
+                            if(err){
+                                throw err
+                            }else{
+                               
+                            }
+                        })
+                    });
+
+                }
+            })
+
+        }
+        let CheckboxIngreso = req.body.checkboxIngreso
+        let CheckboxAlmuerzo = req.body.checkboxAlmuerzo
+        let CheckboxSalida = req.body.checkboxSalida
         let companyID = req.body.company_id
         let code = req.body.code
+        
         let firstName = req.body.first_name
         let lastName = req.body.last_name
         let Phone = req.body.phone
@@ -191,15 +255,33 @@ module.exports = app => {
         let image2 = req.files.image2[0]
         let ruta1 = path.join(__dirname,`../upload/${image1["originalname"]}`)
         let ruta2 = path.join(__dirname,`../upload/${image2["originalname"]}`)
-        let image1UP = fs.readFileSync(ruta1)
-        let image2UP = fs.readFileSync(ruta2)
-
+        var image1UP = fs.readFileSync(ruta1)
+        var image2UP = fs.readFileSync(ruta2)
+        
         conection.query("INSERT INTO face_employe SET ?",{company_id:companyID,code:code,first_name:firstName,last_name:lastName,phone:Phone,email:Email,address:Address,face_image1:image1UP,face_image2:image2UP},(err,result)=>{
             if(err){
                 throw err
-            }else{}
+            }else{
+                //res.redirect("/add_schedule")
+            }
         })
+
+        if (CheckboxIngreso != undefined) {
+            InsertFaceSchedule(companyID,"INGRESO",code)
+        }
+        if (CheckboxAlmuerzo != undefined) {
+            
+            InsertFaceSchedule(companyID,"ALMUERZO",code)
+            InsertFaceSchedule(companyID,"ALMUERZO RETORNO",code)
+        }
+        if (CheckboxSalida != undefined) {
+            
+            InsertFaceSchedule(companyID,"SALIDA",code)
+        }
+        
+        
         //-------------SE ELIMINAN LAS FOTOS DESCARGADAS
+        
         fs.unlink(ruta1,(err)=>{
             if(err){
                 
@@ -299,7 +381,10 @@ module.exports = app => {
         name_user = req.body.name        //Si los datos devueltos son null no actualiza
         if(name_user == null || name_user == "unknown") console.log("no existe nombre")
         else{
-            conection.query(`SELECT company_id,code,last_name from face_employe WHERE first_name='${name_user}'`,function(error,result){
+            let partesNombre = name_user.split(/\s+/)
+            let PartesNombre1 = partesNombre[0]
+            let PartesNombre2 = partesNombre[1]
+            conection.query(`SELECT company_id,code,last_name from face_employe WHERE first_name='${PartesNombre1}' AND last_name='${PartesNombre2}'`,function(error,result){
                 if(error){
                     throw error   
                 }else{
@@ -310,7 +395,7 @@ module.exports = app => {
                             var date = new Date()
                             let fecha = `${date.getFullYear()}-0${date.getMonth()+1}-${date.getDate()}`
                             let hour = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-                            let Fullname = `${name_user} ${result[0]["last_name"]}`
+                            let Fullname = `${name_user}`
                             
                             conection.query(`SELECT description FROM face_log WHERE face_employe_name='${Fullname}' AND date='${fecha}'` ,function(error,result5){
                                 if(error){
@@ -318,6 +403,50 @@ module.exports = app => {
                                 }else{
                                     
                                     let DateEmpleoyed = new Date(`${fecha.replace(/-/g,'/')} ${hour}`)
+                                    var isAffect = 0;
+
+                                    function QueryHandler(element) {
+                                        return new Promise((resolve,reject)=>{
+                                            conection.query(`INSERT INTO face_log (company_id, face_employe_code, face_employe_name, date, time, description, face_schedule_id)  SELECT '${result[0]["company_id"]}','${result[0]["code"]}','${Fullname}','${fecha}','${hour}','${element["name"]}','${result6[0]["id"]}' FROM DUAL WHERE NOT EXISTS (SELECT * FROM face_log WHERE date='${fecha}' AND description='${element["name"]}')`,function(error,result3){
+                                                if(error){
+                                                    throw error
+                                                }else{
+                                                    if (result3.affectedRows == 1) {
+                                                        
+                                                        isAffect = 1
+                                                        resolve("save")
+                                                       
+                                                    }else{
+                                                        resolve()
+                                                    }
+                                                }
+                                                
+                                            })
+                                        })
+                                        
+                                    }
+                                    async function mainLoop() {
+                                        for (let element of result6) {
+                                           
+                                            if(DateEmpleoyed >= new Date(`${fecha.replace(/-/g,'/')} ${element["hour_ini"]}`) && DateEmpleoyed <= new Date(`${fecha.replace(/-/g,'/')} ${element["hour_end"]}`)){
+                                                const result = await QueryHandler(element)
+                                                if (result === "save") {
+                                                    res.send("save")
+                                                    break
+                                                }
+                                                
+                                            }else{}
+                                            if (isAffect==1) {
+                                                break
+                                            }
+                                            
+                                        }
+                                    }
+                                    mainLoop()
+                                    
+                                        
+                                    }
+                                    /*
                                     result6.forEach(element => {
                                         if(DateEmpleoyed >= new Date(`${fecha.replace(/-/g,'/')} ${element["hour_ini"]}`) && DateEmpleoyed <= new Date(`${fecha.replace(/-/g,'/')} ${element["hour_end"]}`)){
                                             conection.query(`INSERT INTO face_log (company_id, face_employe_code, face_employe_name, date, time, description, face_schedule_id)  SELECT '${result[0]["company_id"]}','${result[0]["code"]}','${Fullname}','${fecha}','${hour}','${element["name"]}','${result6[0]["id"]}' FROM DUAL WHERE NOT EXISTS (SELECT * FROM face_log WHERE date='${fecha}' AND description='${element["name"]}')`,function(error,result3){
@@ -329,18 +458,17 @@ module.exports = app => {
                                                     }else{}
                                                 }
                                             })
-                                                    
+                                            return
                                         }else{}  
-                                    });
+                                    });*/
                                     
-                                }
                             })
-                            
                         }
                     })
-                    
-                }   
+                            
+                }
             })
+
         }
        
     });
@@ -349,6 +477,15 @@ module.exports = app => {
         res.render('login')  
     });
     
+    app.get('/add_schedule',(req,res) =>{
+        if(req.session.usuario && req.session.clave){
+            res.render('add_schedule')  
+        }else{
+            res.redirect("/login")
+        }
+        
+    });
+
     app.post('/login',(req,res) =>{
         let username = req.body.name
         let password = req.body.pass

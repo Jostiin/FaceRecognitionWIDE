@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Usuario</title>
+        <!-- Latest compiled and minified CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/add_user.css">
+        <!-- Latest compiled JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark ">
+      
+        <a class="navbar-brand" href="/">
+          <img src="https://wide.ec/wp-content/uploads/2022/06/logo-widep.png" style="width:100px;" class="rounded-pill"> 
+        </a>
+      
+    </nav>
+    <div class="container containerMD">
+            
+        <h2>Agregar Horarios</h2>
+        
+            <form action="/add_schedule" method="post" enctype="multipart/form-data">
+                <div class="mb-3 mt-3">
+
+                    <label for="company_id" class="form-label">Company id:</label>
+                    <div class="">
+                        <input type="text" class="form-control" id="company_id" placeholder="Ingresa el id de la compañia" name="company_id">
+                    </div>
+
+                    <label for="ingreso" class="form-label">INGRESO:</label>
+                    
+                    <div class="d-flex">
+                        <input type="time" class="form-control" id="ingreso1"  name="ingreso1">
+                        <input type="time" class="form-control" id="ingreso2"  name="ingreso2">
+                    </div>
+                    <label for="ingreso" class="form-label">ALMUERZO:</label>
+                    <div class="d-flex ">
+                        <input type="time" class="form-control" id="almuerzo1" name="almuerzo1">
+                        <input type="time" class="form-control" id="almuerzo2" name="almuerzo2">
+                    </div>
+                    <label for="ingreso" class="form-label">SALIDA:</label>
+                    <div class="d-flex">
+                        <input type="time" class="form-control" id="salida1" name="salida1">
+                        <input type="time" class="form-control" id="salida2" name="salida2">
+                    </div>
+
+                <button type="submit" class="btn btn-success mt-2">AGREGAR</button>
+    
+            </form>
+        <br>
+</div>
+</body>
+</html>

@@ -68,7 +68,7 @@ async function get_name(){
         
         data.forEach(element => {
             
-            labels.push(element["first_name"])
+            labels.push(`${element["first_name"]} ${element["last_name"]}`)
         });
         
     })
@@ -140,6 +140,7 @@ function loadLabeledImages(labels) {
             const descriptions = []
             //Recorre las imagenes de los rostros
             try {
+                console.log(label)
                 for(let i=1; i<=1; i++) {
 
                     const img = await faceapi.fetchImage(`../labeled_images/${label}/${i}.jpg`)
