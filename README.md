@@ -10,7 +10,7 @@ npm i
 npm run start
 ```
 # Configuración
-Para configurar el proyecto como: base de datos, puertos Lo podra hacer cambiando el archivo .env.
+Para configurar el proyecto como: base de datos, puertos. Lo podra hacer cambiando el archivo .env.
 ```
 DB_HOST=TuHost
 DB_DATABASE="TuDatabase"

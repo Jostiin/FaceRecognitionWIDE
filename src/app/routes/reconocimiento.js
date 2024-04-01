@@ -92,7 +92,7 @@ module.exports = app => {
         let password = req.session.clave
         if(req.session.usuario && req.session.clave){ // ? Valida si se ha iniciado sesion
             
-            conection.query(`SELECT company_id FROM users WHERE administrador=1 AND username='${username}' AND password='${password}'`,function(error,result){
+            conection.query(`SELECT company_id FROM users WHERE administrador=0 AND username='${username}' AND password='${password}'`,function(error,result){
                 if(error){
                     throw error 
                     
@@ -126,7 +126,7 @@ module.exports = app => {
         let password = req.session.clave
         if(req.session.usuario && req.session.clave){
             
-            conection.query(`SELECT * FROM users WHERE administrador=1 AND name='${username}' AND password='${password}'`,function(error,result){
+            conection.query(`SELECT * FROM users WHERE administrador=0 AND name='${username}' AND password='${password}'`,function(error,result){
                 if(error){
                     throw error
                     
@@ -480,12 +480,13 @@ module.exports = app => {
         let username = req.body.name
         let password = req.body.pass
 
-        conection.query(`SELECT company_id FROM users WHERE administrador=1 AND username='${username}' AND password='${password}'`,function(error,resulte){
+        conection.query(`SELECT company_id FROM users WHERE administrador=0 AND username='${username}' AND password='${password}'`,function(error,resulte){
             if(error){
-                throw error
-            }else{
-                req.session.company_id = resulte[0]["company_id"]
                
+            }else{
+                if (resulte.length != 0) {
+                    req.session.company_id = resulte[0]["company_id"]
+                }else{}
                 res.redirect("/")
             }
         })
