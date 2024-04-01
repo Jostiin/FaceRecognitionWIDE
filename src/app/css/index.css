@@ -184,6 +184,37 @@ img{
     height: 5rem;
     margin: 2rem;
 }
+.img_2{
+    background-image: url("https://cdn0.iconfinder.com/data/icons/shift-interfaces/32/Error-512.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 5rem;
+    height: 5rem;
+    margin: 2rem;
+}
+
+.container3-modal{
+    display: flex;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    
+}
+
+.modalCard3{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+}
 
 @media screen and (max-width: 500px) {
    

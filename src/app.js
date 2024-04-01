@@ -1,12 +1,8 @@
-
-
 const app = require('./config/server');
 
 require("./app/routes/reconocimiento")(app);
 
-//start server
-
+// ! Inicia el servidor
 app.listen(app.get('port'),()=>{
     console.log('server on port', app.get('port'));
 });
-
