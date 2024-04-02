@@ -2,7 +2,8 @@
 const dbConnection = require('../../config/dbConnection');
 const fs = require("fs")
 const path = require('path');
-
+const crypto = require("crypto")
+const bcryptjs = require("bcryptjs")
 
 var name_user = null 
 var error_navbar = false
@@ -13,7 +14,7 @@ module.exports = app => {
     const conection = dbConnection(); // * Se crea un instancia de la base de datos
 
     
-    app.get('/',(req,res) =>{ // * inicial
+    app.get('/',(req,res) =>{ // * ruta inicial
         
         if(req.session.company_id){ // ? SI: Valida si existe una sesion con la compañia id 
             res.render('index',{
@@ -27,30 +28,35 @@ module.exports = app => {
     });
     
     app.get('/mysql',(req,res) =>{ // * Se hace una consulta a la base de datos para face-api.js [DB:face_employe]
-        conection.query(`SELECT first_name,	last_name, face_image1, face_image2 from face_employe WHERE company_id='${req.session.company_id}'`,function(error,result){
-            if(error){
-                throw error // ! Mensaje de error en la consulta
-            }else{
-                for (let index = 0; index < result.length; index++) { // TODO: Crea carpetas con los rostros de los empleados
-                    if(fs.existsSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}`)){ 
-                        fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/1.jpg`,result[index]["face_image1"])
-                        fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/2.jpg`,result[index]["face_image2"])
-                    }else{
-                     
-                        fs.mkdir(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}`,{recursive:true},(err)=>{
-                            if(err) throw err
-                            else{
-                                fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/1.jpg`,result[index]["face_image1"])
-                                fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/2.jpg`,result[index]["face_image2"])
-                            }
-                        })
-                      
+        if (req.session.company_id) {
+            conection.query(`SELECT first_name,	last_name, face_image1, face_image2 from face_employe WHERE company_id='${req.session.company_id}'`,function(error,result){
+                if(error){
+                    throw error // ! Mensaje de error en la consulta
+                }else{
+                    for (let index = 0; index < result.length; index++) { // TODO: Crea carpetas con los rostros de los empleados
+                        if(fs.existsSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}`)){ 
+                            fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/1.jpg`,result[index]["face_image1"])
+                            fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/2.jpg`,result[index]["face_image2"])
+                        }else{
+                         
+                            fs.mkdir(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}`,{recursive:true},(err)=>{
+                                if(err) throw err
+                                else{
+                                    fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/1.jpg`,result[index]["face_image1"])
+                                    fs.writeFileSync(`src/app/labeled_images/${result[index]["first_name"]} ${result[index]["last_name"]}/2.jpg`,result[index]["face_image2"])
+                                }
+                            })
+                          
+                        }
+    
                     }
-
+                    res.send(JSON.stringify(result))
                 }
-                res.send(JSON.stringify(result))
-            }
-        })
+            })
+        }else{
+
+        }
+        
        
     });
     
@@ -91,8 +97,8 @@ module.exports = app => {
         let username = req.session.usuario
         let password = req.session.clave
         if(req.session.usuario && req.session.clave){ // ? Valida si se ha iniciado sesion
-            
-            conection.query(`SELECT company_id FROM users WHERE administrador=0 AND username='${username}' AND password='${password}'`,function(error,result){
+            let passwordHash = crypto.createHash("md5").update(password).digest('hex')
+            conection.query(`SELECT company_id FROM users WHERE username='${username}' AND token='${passwordHash}'`,function(error,result){
                 if(error){
                     throw error 
                     
@@ -124,9 +130,10 @@ module.exports = app => {
     app.post('/admin',(req,res) =>{ // * Renderiza el crud de empleados [DB:users] [DB:face_employe]
         let username = req.session.usuario
         let password = req.session.clave
+        
         if(req.session.usuario && req.session.clave){
-            
-            conection.query(`SELECT * FROM users WHERE administrador=0 AND name='${username}' AND password='${password}'`,function(error,result){
+            let passwordHash = crypto.createHash("md5").update(password).digest('hex')
+            conection.query(`SELECT * FROM users WHERE name='${username}' AND token='${passwordHash}'`,function(error,result){
                 if(error){
                     throw error
                     
@@ -154,18 +161,29 @@ module.exports = app => {
     })
     
     app.post('/panel-control',(req,res) =>{ // * Renderiza el crud de registros de empleados  [DB:face_log]
-        
-        conection.query(`SELECT id,company_id,face_employe_code,face_employe_name,date,time,description,face_schedule_id FROM face_log ORDER BY id DESC;`,function(error,result){
-            if(error){
-                throw error
-            }else{
-                res.render("control",{
-                    users:result
-                })
-            }
-        })
-       
-       
+        if(req.session.company_id){
+            conection.query(`SELECT id,company_id,face_employe_code,face_employe_name,date,time,description,face_schedule_id FROM face_log WHERE company_id='${req.session.company_id}' ORDER BY id DESC;`,function(error,result){
+                if(error){
+                    throw error
+                }else{
+                    conection.query(`SELECT company_name FROM company WHERE id='${req.session.company_id}' ORDER BY id DESC;`,function(error,resulte){
+                        if(error){
+                            throw error
+                        }else{
+                            
+                            res.render("control",{
+                                nameCompany:resulte[0]["company_name"],
+                                users:result
+                            })
+                        }
+                    })
+                   
+                }
+            })
+        }else{
+            res.redirect("/login-authorization")
+        }
+
     })
     
     app.post('/add_schedule',(req,res) =>{ // * Agrega un nuevo horario de registro [DB:face_schedule]   
@@ -184,19 +202,21 @@ module.exports = app => {
             "ALMUERZO RETORNO":[timeAlmuerzo1,timeAlmuerzo2],
             "SALIDA":[timeSalida1,timeSalida2]
         }
-
+        
         if (timeAlmuerzo1 != ":00" && timeAlmuerzo2 != ":00") { // ? SI: Valida si las variables (timeAlmuerzo1) && (timeAlmuerzo2) no son vacias
 
             for (let element in ListNameSchedule) {
-                conection.query("INSERT INTO face_schedule SET ?",{company_id:companyID,name:element,hour_ini:ListNameSchedule[element][0],hour_end:ListNameSchedule[element][1]},(err,result)=>{
+            
+                conection.query(`INSERT INTO face_schedule SET company_id=${companyID},name='${element}',hour_ini='${ListNameSchedule[element][0]}',hour_end='${ListNameSchedule[element][1]}'`,(err,result)=>{
                     if(err){
                         throw err
                     }else{
-                        
-                        res.redirect("/admin")
+                       
                     }
                 })
+                
             }
+           
         
         }else{ // ? NO: Varibles son vacias omite (timeAlmuerzo1) && (timeAlmuerzo2) 
             for (let element in ListNameSchedule) {
@@ -213,6 +233,7 @@ module.exports = app => {
             }
         }
         res.redirect("/admin")
+        
     })
     
     app.post('/add',(req,res) =>{ // * Agrega un nuevo empleado y agrega al horario individual [DB:face_schedule] [DB:face_employe_schedule] [DB:face_employe]
@@ -319,10 +340,12 @@ module.exports = app => {
         let email  = req.body.email
         let address  = req.body.address
         
-        let image1 = req.files.face_image1
-        let image2 = req.files.face_image2
+        let image1 = req.files.image1
+        let image2 = req.files.image2
+        
         
         if(image1 == undefined && image2 == undefined){ // ? Valida si (image1) && (image2) no existen
+            console.log("sin imagenes")
            
             conection.query(`UPDATE face_employe SET company_id='${companyID}',code='${code}',first_name='${first_name}',last_name='${last_name}',phone='${phone}',email='${email}',address='${address}' WHERE id='${id}'`,function(error,result){
                 if(error){
@@ -373,15 +396,21 @@ module.exports = app => {
         isregister = false
         option_ = req.body.option;
         name_user = req.body.name        
+        
         if(name_user == null || name_user == "unknown") console.log("no existe nombre") // ? SI: no se encuentra ningun nombre de rostro no se actualiza los registros
         else{ // ? NO: Se actualiza los registros
             let partesNombre = name_user.split(/\s+/)
             let PartesNombre1 = partesNombre[0]
             let PartesNombre2 = partesNombre[1]
-            conection.query(`SELECT company_id,code,last_name from face_employe WHERE first_name='${PartesNombre1}' AND last_name='${PartesNombre2}'`,function(error,result){
+            conection.query(`SELECT company_id,code,last_name from face_employe WHERE first_name='${PartesNombre1}' AND last_name='${PartesNombre2}' AND company_id=${req.session.company_id}`,function(error,result){
                 if(error){
-                    throw error   
+                    
+                    res.send("NoIdCompany")
+                    ////return new Promise((resolve,reject)=>{resolve("SinIdCompany")})
+                    ////es.redirect("/")
+                    ////throw error   
                 }else{
+                    
                     conection.query(`SELECT face_schedule.id,name,hour_ini,hour_end FROM face_employe_schedule JOIN face_schedule ON face_employe_schedule.face_schedule_id=face_schedule.id WHERE face_employe_schedule.face_employe_code=${result[0]["code"]} AND face_schedule.company_id=${result[0]["company_id"]};`,function(error,result6){
                         if(error){
                             throw error
@@ -442,7 +471,7 @@ module.exports = app => {
                                         }
                                 })
                             }else{
-                                resolve("userNotSchedule")
+                                res.send("userNotSchedule")
                             }
                         }
                     })
@@ -479,13 +508,19 @@ module.exports = app => {
     app.post('/login-authorization',(req,res) =>{ // * Valida las credenciales para la autorizacion [DB:users]
         let username = req.body.name
         let password = req.body.pass
-
-        conection.query(`SELECT company_id FROM users WHERE administrador=0 AND username='${username}' AND password='${password}'`,function(error,resulte){
+        //const salt = bcryptjs.genSaltSync(10,'2y')
+        //let passwordHash = bcryptjs.hashSync(password,salt)
+        //let passwordHash = crypto.createHash("sha1").update(password).digest('hex')
+       // console.log(passwordHash)
+       let passwordHash = crypto.createHash("md5").update(password).digest('hex')
+        conection.query(`SELECT company_id FROM users WHERE username='${username}' AND token='${passwordHash}'`,function(error,resulte){
             if(error){
                
             }else{
+                
                 if (resulte.length != 0) {
                     req.session.company_id = resulte[0]["company_id"]
+                   
                 }else{}
                 res.redirect("/")
             }

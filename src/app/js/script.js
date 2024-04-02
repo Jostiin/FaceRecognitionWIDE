@@ -50,6 +50,8 @@ btn_iniciar.addEventListener("click",function(){
             setTimeout(function () {
                 document.getElementById("container3-modal").style.display = "none"
             },2000)
+        }else if (data == "NoIdCompany") { // ? SINO: redirige al inicio
+            window.location.href = "/"
         }
         
     })

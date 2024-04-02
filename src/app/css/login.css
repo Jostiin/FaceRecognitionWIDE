@@ -70,7 +70,7 @@ input{
 .input_ div{
     width:3rem;
     height: 3rem;
-    background-image: url("./person_FILL0_wght400_GRAD0_opsz48.svg");
+  
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -79,7 +79,7 @@ input{
 .input_2 div{
     width:3rem;
     height: 3rem;
-    background-image: url("./lock_FILL0_wght400_GRAD0_opsz48.svg");
+   
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

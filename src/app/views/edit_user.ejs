@@ -26,25 +26,25 @@
                 <div class="mb-3 mt-3">
 
                 <label for="company_id" class="form-label">Company id:</label>
-                <input type="text" class="form-control" id="company_id" placeholder="Ingresa el nuevo id" name="company_id" value='<%= user[0]["company_id"] %>'>
+                <input type="text" required class="form-control" id="company_id" placeholder="Ingresa el nuevo id" name="company_id" value='<%= user[0]["company_id"] %>'>
                 
                 <label for="code" class="form-label">Code:</label>
-                <input type="text" class="form-control" id="code" placeholder="Ingresa el nuevo codigo" name="code" value='<%= user[0]["code"] %>'>
+                <input type="text" required class="form-control" id="code" placeholder="Ingresa el nuevo codigo" name="code" value='<%= user[0]["code"] %>'>
 
                 <label for="first_name" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" id="first_name" placeholder="Ingresa el nuevo nombre" name="first_name" value='<%= user[0]["first_name"] %>'>
+                <input type="text" required class="form-control" id="first_name" placeholder="Ingresa el nuevo nombre" name="first_name" value='<%= user[0]["first_name"] %>'>
 
                 <label for="last_name" class="form-label">Apellido:</label>
-                <input type="text" class="form-control" id="last_name" placeholder="Ingresa el nuevo apellido" name="last_name" value='<%= user[0]["last_name"] %>'>
+                <input type="text" required class="form-control" id="last_name" placeholder="Ingresa el nuevo apellido" name="last_name" value='<%= user[0]["last_name"] %>'>
                 
                 <label for="phone" class="form-label">Phone:</label>
-                <input type="text" class="form-control" id="phone" placeholder="Ingresa el numero numero de celular" name="phone" value='<%= user[0]["phone"] %>'>
+                <input type="text" required class="form-control" id="phone" placeholder="Ingresa el numero numero de celular" name="phone" value='<%= user[0]["phone"] %>'>
                 
                 <label for="email" class="form-label">Email:</label>
-                <input type="text" class="form-control" id="email" placeholder="Ingresa el nuevo email" name="email" value='<%= user[0]["email"] %>'>
+                <input type="text" required class="form-control" id="email" placeholder="Ingresa el nuevo email" name="email" value='<%= user[0]["email"] %>'>
                 
                 <label for="address" class="form-label">Address:</label>
-                <input type="text" class="form-control" id="address" placeholder="Ingresa la nueva dirección" name="address" value='<%= user[0]["address"] %>'>
+                <input type="text" required class="form-control" id="address" placeholder="Ingresa la nueva dirección" name="address" value='<%= user[0]["address"] %>'>
                 </div>
                 <input type="hidden"  name="idBtn" value='<%= user[0]["id"] %>'>
                 <div class="mb-3">

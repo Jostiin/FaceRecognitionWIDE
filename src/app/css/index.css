@@ -21,6 +21,7 @@ body{
     flex-direction: column;
 }
 nav{
+    z-index: 1100;
     flex: 1;
 }
 video{
@@ -141,7 +142,7 @@ img{
     position: absolute;
     width: 100vw;
     height: 100vh;
-    
+
 }
 
 .modalCard{

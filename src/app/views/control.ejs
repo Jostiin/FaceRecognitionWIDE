@@ -25,27 +25,22 @@
           <table class="table table-hover table-bordered  table-dark table-responsive">
             <thead>
               <tr>
-                <th class="info">ID</th>
-                <th class="info">Company id</th>
-                <th class="info">Code</th>
-                <th class="info">Name</th>
-                <th class="info">Date</th>
-                <th class="info">Time</th>
-                <th class="info">Description</th>
-                <th class="info">face schedule id</th>
+                <th class="info">Compañía</th>
+                <th class="info">Nombre</th>
+                <th class="info">Fecha</th>
+                <th class="info">Hora</th>
+                <th class="info">Descripción</th>
               </tr>
             </thead>
             <tbody>
                 <% for(var i=0; i<users.length; i++) {%>
                   <tr>
-                    <td><%= users[i]["id"] %></td>
-                    <td><%= users[i]["company_id"] %></td>
-                    <td><%= users[i]["face_employe_code"] %></td>
+                    <td><%= nameCompany  %></td>
                     <td><%= users[i]["face_employe_name"] %></td>
-                    <td><%= users[i]["date"] %></td>
+                    <td><%= new Date(users[i]["date"]).toISOString().slice(0,10) %></td>
                     <td><%= users[i]["time"] %></td>
                     <td><%= users[i]["description"] %></td>
-                    <td><%= users[i]["face_schedule_id"] %></td>
+                    
                   </tr>
                 <% } %>
 
